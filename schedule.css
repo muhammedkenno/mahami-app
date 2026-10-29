@@ -1,0 +1,184 @@
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.date-range-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 10px;
+}
+.date-range-fields label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--muted);
+  font-size: .8rem;
+}
+.date-range-fields input[type="date"] {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  background: #0c1423;
+  color-scheme: dark;
+}
+.composer input[type="checkbox"], .calendar-task-form input[type="checkbox"], .schedule-editor input[type="checkbox"] {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  min-height: 20px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--blue);
+}
+.repeat-toggle {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 9px;
+  margin-top: 9px;
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  color: var(--text);
+  background: var(--panel2);
+  cursor: pointer;
+  font-size: .85rem;
+}
+.weekday-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 8px;
+}
+.weekday-picker[hidden] { display: none !important; }
+.weekday-chip {
+  display: inline-flex;
+  min-width: 48px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  background: #0c1423;
+  font-size: .75rem;
+  cursor: pointer;
+}
+.weekday-chip:has(input:checked) {
+  border-color: #568be9;
+  color: #fff;
+  background: #203d68;
+}
+.weekday-chip input[type="checkbox"] {
+  width: 15px;
+  min-width: 15px;
+  height: 15px;
+  min-height: 15px;
+}
+.schedule-hint {
+  margin: 8px 1px 0;
+  color: var(--muted);
+  font-size: .75rem;
+  line-height: 1.55;
+}
+.schedule-error {
+  margin: 4px 2px 0;
+  color: #ff9ca4;
+  font-size: .8rem;
+  line-height: 1.5;
+}
+.date-range-fields [aria-invalid="true"] { border-color: var(--danger); }
+.calendar-task-form .schedule-error { grid-column: 1 / -1; }
+.calendar-schedule-config { grid-column: 1 / -1; min-width: 0; }
+.calendar-schedule-config .date-range-fields { margin-top: 0; }
+.calendar-task-form .calendar-add-row button { white-space: nowrap; }
+
+.item-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  margin-top: -5px;
+}
+.order-btn, .item-actions .delete-btn {
+  display: grid;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  min-height: 48px;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--panel2);
+  font-size: 1.1rem;
+}
+.order-btn:hover:not(:disabled) { border-color: var(--accent); background: #213352; }
+.order-btn:disabled { opacity: .35; cursor: not-allowed; }
+.item-actions .delete-btn { color: var(--danger); background: transparent; }
+.item-schedule-editor {
+  margin-top: 9px;
+  border: 1px solid #293953;
+  border-radius: 11px;
+  background: #0c142355;
+  white-space: normal;
+}
+.item-schedule-editor > summary {
+  min-height: 48px;
+  padding: 9px 10px;
+  color: #aac5ec;
+  font-size: .77rem;
+  line-height: 1.5;
+  cursor: pointer;
+  list-style-position: inside;
+}
+.item-schedule-editor[open] > summary { border-bottom: 1px solid #293953; }
+.schedule-editor { display: grid; gap: 8px; padding: 10px; }
+.schedule-editor .date-range-fields { margin-top: 0; }
+.schedule-editor .repeat-toggle { margin-top: 0; }
+.schedule-editor .schedule-hint { margin: 0; }
+.schedule-save {
+  min-height: 48px;
+  border: 1px solid #385b8b;
+  border-radius: 10px;
+  color: white;
+  background: #203d68;
+  font-weight: 650;
+}
+.schedule-save:hover { background: #2c548f; }
+.schedule-editor input[type="date"]:focus-visible,
+.date-range-fields input:focus-visible,
+.repeat-toggle:focus-within,
+.weekday-chip:focus-within,
+.order-btn:focus-visible,
+.schedule-save:focus-visible,
+.item-schedule-editor > summary:focus-visible {
+  outline: 3px solid #78a9ff;
+  outline-offset: 2px;
+}
+@media (max-width: 380px) {
+  .date-range-fields { grid-template-columns: 1fr; gap: 7px; }
+  .weekday-picker { gap: 5px; }
+  .weekday-chip { min-width: 48px; flex: 1 0 auto; }
+  .order-btn, .item-actions .delete-btn { width: 48px; min-width: 48px; height: 48px; min-height: 48px; }
+}
+
+.check:disabled { opacity: .4; cursor: not-allowed; }

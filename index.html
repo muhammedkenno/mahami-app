@@ -9,6 +9,7 @@
   <link rel="icon" href="./icons/icon-192.png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./calendar.css">
+  <link rel="stylesheet" href="./schedule.css">
   <title>مهامي</title>
   <style>
     :root{color-scheme:dark;--bg:#0b1120;--panel:#111a2b;--panel2:#172236;--border:#26344b;--text:#edf2fa;--muted:#9aa9bf;--accent:#78a9ff;--blue:#3978e8;--danger:#ff7d88;--success:#75d6b0;--radius:18px}
@@ -17,7 +18,7 @@
     header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.brand{display:flex;align-items:center;gap:11px}.brand-icon{width:45px;height:45px;display:grid;place-items:center;border-radius:15px;background:#203454;font-size:23px}h1{font-size:1.55rem;margin:0}.subtitle{color:var(--muted);font-size:.88rem;margin-top:3px}.count-pill{background:var(--panel2);color:var(--muted);padding:8px 11px;border:1px solid var(--border);border-radius:999px;font-size:.82rem;white-space:nowrap}
     .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:18px}.tab{border:1px solid var(--border);color:var(--muted);background:#111a2bcc;min-height:52px;border-radius:14px;padding:8px 5px;font-size:.88rem}.tab-icon{display:block;font-size:1.12rem;margin-bottom:3px}.tab.active{color:#fff;border-color:#568be9;background:linear-gradient(145deg,#2c548f,#203d68);box-shadow:0 5px 18px #07101f80}
     .section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 2px 14px}h2{margin:0;font-size:1.25rem}.section-count{color:var(--muted);font-size:.85rem}
-    .composer{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:13px;margin-bottom:16px}.composer input,.composer textarea{width:100%;color:var(--text);background:#0c1423;border:1px solid var(--border);border-radius:12px;padding:13px 14px;outline:none}.composer input:focus,.composer textarea:focus{border-color:var(--accent)}.composer textarea{resize:vertical;min-height:88px;display:none}.composer.note-mode textarea{display:block;margin-top:9px}.composer.note-mode input{display:none}.composer-row{display:flex;gap:9px;margin-top:10px}.add-btn{flex:1;min-height:48px;border:0;border-radius:12px;color:white;background:var(--blue);font-weight:700}.clear-btn{min-height:48px;padding:0 14px;border:1px solid var(--border);border-radius:12px;color:var(--muted);background:var(--panel2)}
+    .composer{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:13px;margin-bottom:16px}.composer input,.composer textarea{width:100%;color:var(--text);background:#0c1423;border:1px solid var(--border);border-radius:12px;padding:13px 14px;outline:none}.composer input:focus,.composer textarea:focus{border-color:var(--accent)}.composer textarea{resize:vertical;min-height:88px;display:none}.composer.note-mode textarea{display:block;margin-top:9px}.composer.note-mode #itemTitle{display:none}.composer-row{display:flex;gap:9px;margin-top:10px}.add-btn{flex:1;min-height:48px;border:0;border-radius:12px;color:white;background:var(--blue);font-weight:700}.clear-btn{min-height:48px;padding:0 14px;border:1px solid var(--border);border-radius:12px;color:var(--muted);background:var(--panel2)}
     .items{display:grid;gap:9px}.item{display:flex;align-items:flex-start;gap:11px;background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:13px 12px}.check{flex:0 0 25px;width:25px;height:25px;margin-top:1px;accent-color:var(--success)}.item-content{flex:1;min-width:0;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.55}.item.completed .item-content{color:#8190a5;text-decoration:line-through}.item-date{color:#71829a;font-size:.72rem;margin-top:6px}.delete-btn{flex:0 0 38px;width:38px;height:38px;margin-top:-5px;border:1px solid transparent;border-radius:11px;background:transparent;color:var(--danger);font-size:1.1rem}.empty{text-align:center;padding:34px 18px;border:1px dashed #34445d;border-radius:var(--radius);color:var(--muted);background:#111a2b66}.empty-icon{font-size:2rem;margin-bottom:8px}.empty strong{display:block;color:var(--text);font-size:1rem;margin-bottom:5px}footer{text-align:center;color:#64748b;font-size:.75rem;padding-top:22px}.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#e7f7ef;color:#15583e;padding:11px 16px;border-radius:12px;transition:.2s;z-index:5;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
     @media(min-width:600px){.app{padding-top:34px}.tabs{grid-template-columns:repeat(7,minmax(0,1fr))}.tab{min-height:78px}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
   </style>
@@ -40,9 +41,20 @@
       <form class="composer" id="itemForm">
         <input id="itemTitle" type="text" maxlength="300" placeholder="ما المهمة التي تريد إنجازها اليوم؟" autocomplete="off" aria-label="عنوان العنصر">
         <textarea id="itemDetails" maxlength="3000" placeholder="اكتب الملاحظة أو التفاصيل هنا..." aria-label="تفاصيل الملاحظة"></textarea>
-        <label class="due-date-label" for="itemDueDate">موعد التنفيذ (اختياري)
-          <input id="itemDueDate" type="date" aria-label="موعد التنفيذ، اختياري">
+        <div class="date-range-fields">
+          <label for="itemStartDate">من تاريخ (اختياري)
+            <input id="itemStartDate" type="date" aria-label="بداية المهمة">
+          </label>
+          <label for="itemEndDate">إلى تاريخ (اختياري)
+            <input id="itemEndDate" type="date" aria-label="نهاية المهمة">
+          </label>
+        </div>
+        <label class="repeat-toggle" for="itemRepeatWeekly">
+          <input id="itemRepeatWeekly" type="checkbox">
+          <span>كرر أسبوعيًا</span>
         </label>
+        <div class="weekday-picker" id="itemRepeatDays" role="group" aria-label="أيام تكرار المهمة أسبوعيًا" hidden></div>
+        <p class="schedule-hint">النطاق يشمل تاريخ البداية والنهاية. إذا فعّلت التكرار، اختر الأيام وسيستمر أسبوعيًا حتى تاريخ النهاية، أو بلا نهاية إذا تركته فارغًا.</p>
         <div class="composer-row"><button class="add-btn" type="submit">＋ إضافة</button><button class="clear-btn" type="button" id="clearInput">مسح</button></div>
       </form>
       <div class="items" id="itemsList"></div>
@@ -72,6 +84,22 @@
           <label class="visually-hidden" for="calendarCategory">قسم المهمة</label>
           <select id="calendarCategory" aria-label="قسم المهمة"></select>
           <button type="submit">＋ إضافة</button>
+        </div>
+        <div class="calendar-schedule-config">
+          <div class="date-range-fields">
+            <label for="calendarTaskStartDate">من تاريخ
+              <input id="calendarTaskStartDate" type="date" aria-label="بداية المهمة من التقويم">
+            </label>
+            <label for="calendarTaskEndDate">إلى تاريخ (اختياري)
+              <input id="calendarTaskEndDate" type="date" aria-label="نهاية المهمة من التقويم">
+            </label>
+          </div>
+          <label class="repeat-toggle" for="calendarTaskRepeatWeekly">
+            <input id="calendarTaskRepeatWeekly" type="checkbox">
+            <span>كرر أسبوعيًا</span>
+          </label>
+          <div class="weekday-picker" id="calendarTaskRepeatDays" role="group" aria-label="أيام التكرار الأسبوعي" hidden></div>
+          <p class="schedule-hint">التكرار يظهر تلقائيًا في الأيام المختارة، ويمكن تحديد نهاية له أو تركه مستمرًا.</p>
         </div>
       </form>
     </div>

@@ -24,6 +24,7 @@
   const itemsList = $("itemsList");
   const calendarPanel = $("calendarPanel");
   const financePanel = $("financePanel");
+  const gymPanel = $("gymPanel");
   const calendarDays = $("calendarDays");
   const calendarTaskForm = $("calendarTaskForm");
   const calendarTaskInput = $("calendarTaskTitle");
@@ -140,11 +141,13 @@
     const all = allItems();
     const financeCount = window.MahamiFinance?.count() || 0;
     $("totalCount").textContent = `${num(all.length + financeCount)} سجلات`;
+    const gymCount = window.MahamiGym?.count() || 0;
     const count = activeSection === "calendar"
       ? itemsForDate(selectedDate).length
-      : activeSection === "expenses" ? financeCount : (data[activeSection] || []).length;
-    const target = activeSection === "expenses" ? $("financeCount") : $("sectionCount");
-    target.textContent = `${num(count)} ${activeSection === "expenses" ? "حركات" : "عناصر"}`;
+      : activeSection === "expenses" ? financeCount : activeSection === "gym" ? gymCount : (data[activeSection] || []).length;
+    const target = activeSection === "expenses" ? $("financeCount") : activeSection === "gym" ? $("gymCount") : $("sectionCount");
+    const label = activeSection === "expenses" ? "حركات" : activeSection === "gym" ? "أيام تدريب" : "عناصر";
+    target.textContent = `${num(count)} ${label}`;
   }
 
   function showToast(message) {
@@ -533,6 +536,10 @@
       window.MahamiFinance?.render();
       updateCounts();
     }
+    else if (activeSection === "gym") {
+      window.MahamiGym?.render();
+      updateCounts();
+    }
     else {
       renderRegularItems();
       updateCounts();
@@ -542,9 +549,11 @@
   function render() {
     const isCalendar = activeSection === "calendar";
     const isExpenses = activeSection === "expenses";
-    $("regularView").hidden = isCalendar || isExpenses;
+    const isGym = activeSection === "gym";
+    $("regularView").hidden = isCalendar || isExpenses || isGym;
     calendarPanel.hidden = !isCalendar;
     financePanel.hidden = !isExpenses;
+    gymPanel.hidden = !isGym;
     $("tabs").querySelectorAll(".tab").forEach(button => {
       const active = button.dataset.section === activeSection;
       button.classList.toggle("active", active);
@@ -556,6 +565,11 @@
     }
     if (isExpenses) {
       window.MahamiFinance?.render();
+      updateCounts();
+      return;
+    }
+    if (isGym) {
+      window.MahamiGym?.render();
       updateCounts();
       return;
     }
@@ -681,6 +695,7 @@
     detailsInput.value = "";
   });
   window.addEventListener("mahami-finance-change", updateCounts);
+  window.addEventListener("mahami-gym-change", updateCounts);
   $("previousMonth").addEventListener("click", () => moveCalendarMonth(-1));
   $("nextMonth").addEventListener("click", () => moveCalendarMonth(1));
   $("calendarToday").addEventListener("click", () => {

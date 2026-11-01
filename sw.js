@@ -1,11 +1,13 @@
 const CACHE_PREFIX = "mahami-app-v";
-const CACHE_NAME = `${CACHE_PREFIX}4-shell`;
+const CACHE_NAME = `${CACHE_PREFIX}5-shell`;
 const APP_FILES = [
   new URL("./", self.registration.scope).href,
   new URL("./index.html", self.registration.scope).href,
   new URL("./manifest.json", self.registration.scope).href,
   new URL("./calendar.css", self.registration.scope).href,
   new URL("./schedule.css", self.registration.scope).href,
+  new URL("./finance.css", self.registration.scope).href,
+  new URL("./finance.js", self.registration.scope).href,
   new URL("./app.js", self.registration.scope).href,
   new URL("./icons/icon-192.png", self.registration.scope).href,
   new URL("./icons/icon-512.png", self.registration.scope).href

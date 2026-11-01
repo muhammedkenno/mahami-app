@@ -23,6 +23,7 @@
   const detailsInput = $("itemDetails");
   const itemsList = $("itemsList");
   const calendarPanel = $("calendarPanel");
+  const financePanel = $("financePanel");
   const calendarDays = $("calendarDays");
   const calendarTaskForm = $("calendarTaskForm");
   const calendarTaskInput = $("calendarTaskTitle");
@@ -137,11 +138,13 @@
 
   function updateCounts() {
     const all = allItems();
-    $("totalCount").textContent = `${num(all.length)} عناصر`;
+    const financeCount = window.MahamiFinance?.count() || 0;
+    $("totalCount").textContent = `${num(all.length + financeCount)} سجلات`;
     const count = activeSection === "calendar"
       ? itemsForDate(selectedDate).length
-      : (data[activeSection] || []).length;
-    $("sectionCount").textContent = `${num(count)} عناصر`;
+      : activeSection === "expenses" ? financeCount : (data[activeSection] || []).length;
+    const target = activeSection === "expenses" ? $("financeCount") : $("sectionCount");
+    target.textContent = `${num(count)} ${activeSection === "expenses" ? "حركات" : "عناصر"}`;
   }
 
   function showToast(message) {
@@ -526,6 +529,10 @@
 
   function refreshCurrentView() {
     if (activeSection === "calendar") renderCalendar();
+    else if (activeSection === "expenses") {
+      window.MahamiFinance?.render();
+      updateCounts();
+    }
     else {
       renderRegularItems();
       updateCounts();
@@ -534,8 +541,10 @@
 
   function render() {
     const isCalendar = activeSection === "calendar";
-    $("regularView").hidden = isCalendar;
+    const isExpenses = activeSection === "expenses";
+    $("regularView").hidden = isCalendar || isExpenses;
     calendarPanel.hidden = !isCalendar;
+    financePanel.hidden = !isExpenses;
     $("tabs").querySelectorAll(".tab").forEach(button => {
       const active = button.dataset.section === activeSection;
       button.classList.toggle("active", active);
@@ -543,6 +552,11 @@
     });
     if (isCalendar) {
       renderCalendar();
+      return;
+    }
+    if (isExpenses) {
+      window.MahamiFinance?.render();
+      updateCounts();
       return;
     }
     const section = sections[activeSection];
@@ -666,6 +680,7 @@
     titleInput.value = "";
     detailsInput.value = "";
   });
+  window.addEventListener("mahami-finance-change", updateCounts);
   $("previousMonth").addEventListener("click", () => moveCalendarMonth(-1));
   $("nextMonth").addEventListener("click", () => moveCalendarMonth(1));
   $("calendarToday").addEventListener("click", () => {

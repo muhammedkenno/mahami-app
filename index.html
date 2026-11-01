@@ -10,6 +10,7 @@
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./calendar.css">
   <link rel="stylesheet" href="./schedule.css">
+  <link rel="stylesheet" href="./finance.css">
   <title>مهامي</title>
   <style>
     :root{color-scheme:dark;--bg:#0b1120;--panel:#111a2b;--panel2:#172236;--border:#26344b;--text:#edf2fa;--muted:#9aa9bf;--accent:#78a9ff;--blue:#3978e8;--danger:#ff7d88;--success:#75d6b0;--radius:18px}
@@ -20,7 +21,7 @@
     .section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 2px 14px}h2{margin:0;font-size:1.25rem}.section-count{color:var(--muted);font-size:.85rem}
     .composer{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:13px;margin-bottom:16px}.composer input,.composer textarea{width:100%;color:var(--text);background:#0c1423;border:1px solid var(--border);border-radius:12px;padding:13px 14px;outline:none}.composer input:focus,.composer textarea:focus{border-color:var(--accent)}.composer textarea{resize:vertical;min-height:88px;display:none}.composer.note-mode textarea{display:block;margin-top:9px}.composer.note-mode #itemTitle{display:none}.composer-row{display:flex;gap:9px;margin-top:10px}.add-btn{flex:1;min-height:48px;border:0;border-radius:12px;color:white;background:var(--blue);font-weight:700}.clear-btn{min-height:48px;padding:0 14px;border:1px solid var(--border);border-radius:12px;color:var(--muted);background:var(--panel2)}
     .items{display:grid;gap:9px}.item{display:flex;align-items:flex-start;gap:11px;background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:13px 12px}.check{flex:0 0 25px;width:25px;height:25px;margin-top:1px;accent-color:var(--success)}.item-content{flex:1;min-width:0;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.55}.item.completed .item-content{color:#8190a5;text-decoration:line-through}.item-date{color:#71829a;font-size:.72rem;margin-top:6px}.delete-btn{flex:0 0 38px;width:38px;height:38px;margin-top:-5px;border:1px solid transparent;border-radius:11px;background:transparent;color:var(--danger);font-size:1.1rem}.empty{text-align:center;padding:34px 18px;border:1px dashed #34445d;border-radius:var(--radius);color:var(--muted);background:#111a2b66}.empty-icon{font-size:2rem;margin-bottom:8px}.empty strong{display:block;color:var(--text);font-size:1rem;margin-bottom:5px}footer{text-align:center;color:#64748b;font-size:.75rem;padding-top:22px}.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#e7f7ef;color:#15583e;padding:11px 16px;border-radius:12px;transition:.2s;z-index:5;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
-    @media(min-width:600px){.app{padding-top:34px}.tabs{grid-template-columns:repeat(7,minmax(0,1fr))}.tab{min-height:78px}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+    @media(min-width:600px){.app{padding-top:34px}.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.tab{min-height:78px}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
   </style>
 </head>
 <body>
@@ -34,6 +35,7 @@
     <button class="tab" data-section="mustBuy"><span class="tab-icon">🛒</span>مشتريات ضرورية</button>
     <button class="tab" data-section="regularBuy"><span class="tab-icon">🧺</span>مشتريات عادية</button>
     <button class="tab" data-section="calendar"><span class="tab-icon" aria-hidden="true">▦</span>التقويم</button>
+    <button class="tab" data-section="expenses"><span class="tab-icon" aria-hidden="true">¤</span>المصروف</button>
   </nav>
   <section aria-live="polite">
     <div id="regularView">
@@ -103,10 +105,73 @@
         </div>
       </form>
     </div>
+
+    <div class="finance-panel" id="financePanel" hidden>
+      <div class="section-head"><h2>المصروف</h2><span class="section-count" id="financeCount">٠ حركات</span></div>
+      <div class="finance-summary" aria-label="ملخص الدخل والمصروف">
+        <article class="finance-stat income-stat"><span>إجمالي الدخل</span><strong id="financeIncomeTotal">٠</strong></article>
+        <article class="finance-stat expense-stat"><span>إجمالي المصروف</span><strong id="financeExpenseTotal">٠</strong></article>
+        <article class="finance-stat balance-stat"><span>الرصيد</span><strong id="financeBalanceTotal">٠</strong></article>
+      </div>
+
+      <form class="finance-form" id="financeForm" novalidate>
+        <fieldset class="finance-type-picker">
+          <legend>نوع الحركة</legend>
+          <label class="finance-type-option expense-option">
+            <input type="radio" name="transactionType" value="expense" checked>
+            <span>مصروف</span>
+          </label>
+          <label class="finance-type-option income-option">
+            <input type="radio" name="transactionType" value="income">
+            <span>دخل</span>
+          </label>
+        </fieldset>
+        <div class="finance-fields">
+          <label for="financeAmount">المبلغ
+            <input id="financeAmount" name="amount" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" required>
+          </label>
+          <label for="financeDate">التاريخ
+            <input id="financeDate" name="date" type="date" required>
+          </label>
+          <label class="finance-description" for="financeDescription">الوصف (اختياري)
+            <input id="financeDescription" name="description" type="text" maxlength="120" placeholder="مثال: راتب، مواصلات، طعام">
+          </label>
+        </div>
+
+        <section class="calculator" aria-labelledby="calculatorTitle">
+          <div class="calculator-heading"><h3 id="calculatorTitle">آلة حاسبة</h3><span>الناتج ينتقل إلى خانة المبلغ</span></div>
+          <div class="calculator-screen">
+            <output class="calculator-expression" id="calculatorExpression" dir="ltr" aria-label="العملية الحسابية">٠</output>
+            <div class="calculator-feedback" id="calculatorFeedback" role="status" aria-live="polite"></div>
+          </div>
+          <div class="calculator-grid" id="calculatorKeys" aria-label="أزرار الآلة الحاسبة">
+            <button type="button" data-calc="clear" class="calculator-utility" aria-label="مسح العملية">مسح</button>
+            <button type="button" data-calc="back" class="calculator-utility" aria-label="حذف آخر رقم">⌫</button>
+            <button type="button" data-calc="(" class="calculator-utility" aria-label="قوس مفتوح">(</button>
+            <button type="button" data-calc=")" class="calculator-utility" aria-label="قوس مغلق">)</button>
+            <button type="button" data-calc="7">٧</button><button type="button" data-calc="8">٨</button><button type="button" data-calc="9">٩</button><button type="button" data-calc="/" class="calculator-operator" aria-label="قسمة">÷</button>
+            <button type="button" data-calc="4">٤</button><button type="button" data-calc="5">٥</button><button type="button" data-calc="6">٦</button><button type="button" data-calc="*" class="calculator-operator" aria-label="ضرب">×</button>
+            <button type="button" data-calc="1">١</button><button type="button" data-calc="2">٢</button><button type="button" data-calc="3">٣</button><button type="button" data-calc="-" class="calculator-operator" aria-label="طرح">−</button>
+            <button type="button" data-calc="0">٠</button><button type="button" data-calc="." aria-label="فاصلة عشرية">٫</button><button type="button" data-calc="=" class="calculator-equals" aria-label="احسب الناتج">=</button><button type="button" data-calc="+" class="calculator-operator" aria-label="جمع">+</button>
+          </div>
+        </section>
+
+        <p class="finance-error" id="financeError" role="alert" hidden></p>
+        <p class="finance-hint">استخدم العملة نفسها في جميع الحركات؛ لا يفرض التطبيق عملة محددة. بياناتك محفوظة على هذا الجهاز فقط.</p>
+        <button class="finance-submit" type="submit">＋ إضافة الحركة</button>
+        <p class="finance-status" id="financeStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <section class="transaction-section" aria-labelledby="transactionsTitle">
+        <h3 id="transactionsTitle">سجل الحركات</h3>
+        <div class="transactions-list" id="transactionsList" aria-live="polite"></div>
+      </section>
+    </div>
   </section>
   <footer>تُحفظ بياناتك على هذا الجهاز فقط · يعمل دون إنترنت</footer>
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./finance.js" defer></script>
   <script src="./app.js" defer></script>
 </body>
 </html>
